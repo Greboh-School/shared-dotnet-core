@@ -1,0 +1,14 @@
+name: Publish nuget package to github
+on:
+    push:
+      branches: main
+    pull_request:
+      branches: main
+      
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+jobs:
+    build:
+        uses: Greboh-School/shared-pipelines/.github/workflows/dotnet-nuget-publish.yaml@main
+        secrets: inherit
