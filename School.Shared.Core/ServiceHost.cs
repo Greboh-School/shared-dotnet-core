@@ -68,22 +68,15 @@ public static class ServiceHost<TEntryPoint> where TEntryPoint : EntryPoint, new
             var app = builder.Build();
             
             entryPoint.ConfigureAppPipeline(app);
-            
-            // Handle arguments making it possible to execute custom logic
-            switch (args.Any() ? args[0] : string.Empty)
-            {
-                case "migrate":
-                {
-                    ApplyMigrations(app).Wait();
-                    break;
-                }
 
-                default:
-                {
-                    app.Run();
-                    break;
-                }
+            var migratorEnabled = bool.Parse(config["Config:Inclusion:Migrator"]!);
+
+            if (migratorEnabled)
+            {
+                ApplyMigrations(app).Wait();
             }
+            
+            app.Run();
         }
         catch (Exception ex)
         {

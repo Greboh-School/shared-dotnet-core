@@ -10,4 +10,5 @@ public class InclusionOptions
     public bool Versioning { get; set; } = true;
     public bool Mapper { get; set; } = true;
     public bool Cors { get; set; } = true;
+    public bool Migrator { get; set; } = true;
 }
