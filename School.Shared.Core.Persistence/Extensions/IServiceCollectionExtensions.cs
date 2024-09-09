@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using School.Shared.Core.Persistence.Filters;
 
 namespace School.Shared.Core.Persistence.Extensions;
 
@@ -18,6 +19,8 @@ public static class IServiceCollectionExtensions
                 opt.EnableRetryOnFailure();
             })
         );
+
+        services.AddScoped<IMigrationFilter, MigrationFilter<TContext>>();
 
         return services;
     }

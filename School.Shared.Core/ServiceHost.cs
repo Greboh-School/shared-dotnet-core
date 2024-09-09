@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using School.Shared.Core.Persistence.Filters;
 using Serilog;
 using Serilog.Sinks.OpenTelemetry;
 
@@ -71,7 +74,7 @@ public static class ServiceHost<TEntryPoint> where TEntryPoint : EntryPoint, new
             {
                 case "migrate":
                 {
-                    // TODO: Implement handling of cloud based database migration
+                    ApplyMigrations(app).Wait();
                     break;
                 }
 
@@ -89,7 +92,26 @@ public static class ServiceHost<TEntryPoint> where TEntryPoint : EntryPoint, new
 
         return 0;
     }
+
+    private static async Task ApplyMigrations(IHost host)
+    {
+        var provider = host.Services.GetRequiredService<IServiceProvider>();
+
+        using var scope = provider.CreateScope();
+
+        var migrations = scope.ServiceProvider.GetService<IEnumerable<IMigrationFilter>>();
+
+        if (migrations?.Any() ?? false)
+        {
+            foreach (var migration in migrations)
+            {
+                await migration.ApplyPending();
+            }
+        }
+    }
+
 }
+
 
 public static class ServiceHost
 {
