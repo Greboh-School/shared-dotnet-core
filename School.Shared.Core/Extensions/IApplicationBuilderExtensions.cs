@@ -46,19 +46,19 @@ public static class IApplicationBuilderExtensions
 
         builder.UseSwagger(config =>
         {
-            config.RouteTemplate = "api/swagger/{documentName}/swagger.json";
+            config.RouteTemplate = $"{options.Route}/swagger/{{documentName}}/swagger.json";
 
             if (!options.Debug)
             {
                 config.PreSerializeFilters.Add((swagger, _) =>
                 {
                     var paths = new OpenApiPaths();
-
-                    foreach (var path in paths)
+            
+                    foreach (var path in swagger.Paths)
                     {
-                        paths.Add(path.Key.Replace("/api", $"/{options.Route}"), path.Value);
+                        paths.Add(path.Key.Replace("/api/", $"/{options.Route}/"), path.Value);
                     }
-
+                    
                     swagger.Paths = paths;
                 });
             }
@@ -80,7 +80,7 @@ public static class IApplicationBuilderExtensions
                 }
             }
 
-            config.RoutePrefix = "api/swagger";
+            config.RoutePrefix = $"{options.Route}/swagger";
         });
     }
 }

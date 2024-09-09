@@ -106,9 +106,9 @@ public class ExceptionFilter : IExceptionFilter
                 Stacktrace = ctx.Exception.StackTrace
             });
         }
-
+        
         // If not in development we need to limit information for security concerns.
-        if (ctx.Exception.GetType().IsAssignableFrom(typeof(ServiceException)))
+        if (ctx.Exception.GetType().IsAssignableTo(typeof(ServiceException)))
         {
             return new JsonResult(new
             {
